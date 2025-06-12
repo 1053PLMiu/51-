@@ -1,0 +1,150 @@
+C51 COMPILER V9.54   MAIN                                                                  06/10/2025 23:38:57 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Delay.H"
+   3          #include "LCD1602.H"
+   4          #include "MatrixKey.H"
+   5          
+   6          //定义区域
+   7          unsigned char password[6] = {1,2,3,4,5,6};  // 解锁密码
+   8          
+   9          unsigned char inputPassword[6];    // 存储用户输入的密码
+  10           
+  11          unsigned char index = 0;       // 输入密码的索引            
+  12          
+  13          unsigned char KeyNum;         //接收键码
+  14          
+  15          bit isCorrect=1;
+  16          
+  17          //函数声明区域
+  18          void ClearInputPassword(void);
+  19          
+  20          void CheckPassword(void);
+  21          
+  22          void ClearTheScreen(void);
+  23          
+  24          
+  25          void main(){
+  26   1              LCD_Init();
+  27   1              LCD_ShowString(1,1,"Password:");
+  28   1              while(1){
+  29   2                      
+  30   2                      KeyNum=MatrixKey();
+  31   2                      
+  32   2                      if(KeyNum<10 && KeyNum!=0 &&index<6){             
+  33   3                              inputPassword[index] = KeyNum;  // 获取按键值并存储在inputPassword                     
+  34   3                              LCD_ShowNum(2,index+1,inputPassword[index],1);
+  35   3                              index++;
+  36   3                              LCD_ShowString(2,10,"Count:");
+  37   3                              LCD_ShowNum(2,16,index,1);
+  38   3                      }
+  39   2                      
+  40   2                      if(KeyNum == 11){
+  41   3                              if(index == 6){ // 必须输入满6位才能验证
+  42   4                                      CheckPassword();   //验证
+  43   4                                      if(isCorrect){
+  44   5                                              ClearTheScreen();
+  45   5                                              LCD_ShowString(1,14,"YES");
+  46   5                                                      
+  47   5                                      }else{
+  48   5                                              ClearTheScreen();
+  49   5                                              LCD_ShowString(1,14," NO");
+  50   5                                      }
+  51   4                                      ClearInputPassword(); // 清除输入
+  52   4                              }else{
+  53   4                                      LCD_ShowString(1, 14, "few"); // 提示输入数据太少
+  54   4                                      isCorrect = 0;
+C51 COMPILER V9.54   MAIN                                                                  06/10/2025 23:38:57 PAGE 2   
+
+  55   4      
+  56   4                              }
+  57   3                      }       
+  58   2                      //   清零
+  59   2                               if(KeyNum == 10){
+  60   3                                      
+  61   3                                      LCD_ShowString(1, 14, "Clr"); // 显示清零提示
+  62   3                                      Delay(500);
+  63   3                                      ClearInputPassword();
+  64   3                                      ClearTheScreen();
+  65   3                                      
+  66   3                              }
+  67   2      
+  68   2                              // 处理退出系统按键
+  69   2                              if(KeyNum == 12){                               
+  70   3                                      LCD_Init();
+  71   3                                      LCD_ShowString(1, 1, "System Exit");
+  72   3                                      while (1); // 无限循环，停止程序
+  73   3                              }
+  74   2                      }
+  75   1              
+  76   1              }
+  77                  
+  78          
+  79          
+  80          /**
+  81            * @brief    用来清除用户输入的数组密码和键码和输入的索引限制
+  82            * @param    无
+  83            * @retval   无
+  84            */
+  85          void ClearInputPassword(void){
+  86   1          unsigned char i;
+  87   1          for(i=0;i<6;i++){ // 遍历整个密码数组，确保全部清除
+  88   2              inputPassword[i] = 0;
+  89   2          }
+  90   1          KeyNum = 0;
+  91   1          index = 0;
+  92   1      //    LCD_Init(); // 清屏
+  93   1      //    LCD_ShowString(1, 1, "Password:");
+  94   1      //   LCD_ShowString(1, 14, "     "); // 清除状态提示区域
+  95   1      }
+  96          
+  97          /**
+  98            * @brief    检验密码是否正确，赋值给isCorrect确定
+  99            * @param    无
+ 100            * @retval   无
+ 101            */
+ 102          void CheckPassword(void){
+ 103   1          unsigned char i;
+ 104   1          isCorrect=1;
+ 105   1          for(i=0;i<6;i++){
+ 106   2              if (inputPassword[i] != password[i]) {
+ 107   3                  isCorrect = 0; // 如果有任意一个字符不匹配，则密码错误
+ 108   3                  break;
+ 109   3              }
+ 110   2          }
+ 111   1      }
+ 112          
+ 113          /**
+ 114            * @brief    清屏恢复初始
+ 115            * @param    无
+ 116            * @retval   无
+C51 COMPILER V9.54   MAIN                                                                  06/10/2025 23:38:57 PAGE 3   
+
+ 117            */
+ 118          void ClearTheScreen(void){
+ 119   1              LCD_Init();
+ 120   1              LCD_ShowString(1, 1, "Password:");
+ 121   1      }
+ 122          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    277    ----
+   CONSTANT SIZE    =     45    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     14    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
